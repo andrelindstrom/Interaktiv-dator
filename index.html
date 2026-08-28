@@ -28,15 +28,20 @@
 html, body { margin: 0; padding: 0; background: var(--board-bg); color: var(--text-main); font-family: var(--font-sans); }
 body {
   min-height: 100vh;
-  background: radial-gradient(1000px 600px at 50% 0%, rgba(56, 189, 248, 0.05), transparent 70%), var(--board-bg);
+  background: radial-gradient(1200px 600px at 50% 0%, rgba(56, 189, 248, 0.05), transparent 70%), var(--board-bg);
 }
 
-.wrap { max-width: 1300px; margin: 0 auto; padding: 32px 20px 60px; }
+.wrap { 
+  width: 100%; 
+  max-width: 100%; 
+  margin: 0 auto; 
+  padding: 24px 32px 40px; 
+}
 
 header {
-  margin-bottom: 28px;
+  margin-bottom: 24px;
   border-bottom: 1px solid var(--panel-border);
-  padding-bottom: 20px;
+  padding-bottom: 16px;
 }
 .eyebrow {
   font-family: var(--font-mono);
@@ -52,7 +57,7 @@ header {
   content: ""; width: 8px; height: 8px; border-radius: 50%;
   background: var(--trace-active); box-shadow: 0 0 10px var(--trace-active);
 }
-h1 { font-family: var(--font-mono); font-size: clamp(26px, 3.5vw, 40px); margin: 6px 0; font-weight: 700; }
+h1 { font-family: var(--font-mono); font-size: clamp(26px, 3vw, 36px); margin: 6px 0; font-weight: 700; }
 .sub-bar {
   display: flex;
   justify-content: space-between;
@@ -60,30 +65,64 @@ h1 { font-family: var(--font-mono); font-size: clamp(26px, 3.5vw, 40px); margin:
   gap: 16px;
   flex-wrap: wrap;
 }
-.sub { color: var(--text-muted); font-size: 15px; max-width: 600px; margin: 0; }
+.sub { color: var(--text-muted); font-size: 15px; max-width: 800px; margin: 0; }
 
-.layout { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(320px, 1fr); gap: 24px; align-items: start; }
-@media (max-width: 960px) { .layout { grid-template-columns: 1fr; } }
+/* LAYOUT: Låser höjden så att BÅDA rutorna blir exakt lika höga */
+.layout { 
+  display: grid; 
+  grid-template-columns: minmax(0, 1fr) 380px; 
+  gap: 24px; 
+  align-items: stretch;
+  height: clamp(480px, 60vh, 620px);
+}
 
-/* Board SVG Stylings */
+@media (max-width: 1200px) { 
+  .layout { grid-template-columns: minmax(0, 1fr) 320px; } 
+}
+@media (max-width: 960px) { 
+  .layout { 
+    grid-template-columns: 1fr; 
+    height: auto;
+  } 
+}
+
+/* VÄNSTER KORT: Centrerar och skalor ner SVG-bilden */
 .board-card {
   background: var(--board-edge);
   border: 1px solid var(--panel-border);
   border-radius: 16px;
-  padding: 16px;
+  padding: 36px 16px 16px;
   position: relative;
   box-shadow: inset 0 0 80px rgba(0,0,0,0.8);
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
 }
-.board-hint {
-  font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);
-  letter-spacing: 0.08em; padding: 2px 4px 12px;
-}
-svg { display: block; width: 100%; height: auto; }
 
-.trace { fill: none; stroke: var(--trace-color); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; transition: stroke .3s, filter .3s; }
-.trace.power { stroke: var(--power-trace); stroke-width: 4; }
-.trace.active { stroke: var(--trace-active); filter: drop-shadow(0 0 6px var(--trace-active)); }
-.trace.power.active { stroke: var(--power-active); filter: drop-shadow(0 0 8px var(--power-active)); }
+.board-hint {
+  position: absolute;
+  top: 12px;
+  left: 16px;
+  font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);
+  letter-spacing: 0.08em;
+}
+
+svg { 
+  display: block; 
+  width: 100%; 
+  height: 100%; 
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.trace { fill: none; stroke: var(--trace-color); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; transition: stroke .3s, filter .3s; }
+.trace.power { stroke: var(--power-trace); stroke-width: 4.5; }
+.trace.active { stroke: var(--trace-active); filter: drop-shadow(0 0 8px var(--trace-active)); }
+.trace.power.active { stroke: var(--power-active); filter: drop-shadow(0 0 10px var(--power-active)); }
 
 .chip { cursor: pointer; }
 .chip .hitbox { fill: transparent; }
@@ -94,24 +133,27 @@ svg { display: block; width: 100%; height: auto; }
 .chip:hover .outline { stroke: var(--trace-active); filter: drop-shadow(0 0 8px rgba(56,189,248,0.4)); }
 .chip.selected .outline { stroke: var(--trace-active); fill: #1e293b; filter: drop-shadow(0 0 12px rgba(56,189,248,0.6)); }
 
-.chip-label { font-family: var(--font-mono); font-size: 13px; font-weight: 700; fill: var(--text-main); pointer-events: none; }
-.chip-sub { font-family: var(--font-mono); font-size: 9px; fill: var(--text-muted); pointer-events: none; }
+.chip-label { font-family: var(--font-mono); font-size: 14px; font-weight: 700; fill: var(--text-main); pointer-events: none; }
+.chip-sub { font-family: var(--font-mono); font-size: 10px; fill: var(--text-muted); pointer-events: none; }
 .screwhole { fill: #020617; stroke: var(--panel-border); stroke-width: 1.5; }
 
-.pulse { r: 4; fill: var(--trace-active); filter: drop-shadow(0 0 6px var(--trace-active)); opacity: 0; }
+.pulse { r: 5; fill: var(--trace-active); filter: drop-shadow(0 0 8px var(--trace-active)); opacity: 0; }
 
-/* Dynamic Display Panel */
+/* HÖGER KORT: Exakt samma höjd som vänstersidan, med rullningslist vid behov */
 .panel {
   background: var(--panel-bg);
   border: 1px solid var(--panel-border);
   border-radius: 16px;
   padding: 24px;
-  min-height: 520px;
+  height: 100%;
   display: flex;
   flex-direction: column;
+  justify-content: flex-start;
   gap: 14px;
-  position: sticky; top: 20px;
+  box-sizing: border-box;
+  overflow-y: auto;
 }
+
 .panel-tag { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--trace-active); }
 .panel h2 { font-family: var(--font-mono); font-size: 22px; margin: 0; }
 .panel p { font-size: 14px; line-height: 1.6; color: #cbd5e1; margin: 0; }
@@ -120,7 +162,7 @@ svg { display: block; width: 100%; height: auto; }
 .fact-list li::before { content: "›"; position: absolute; left: 0; color: var(--trace-active); font-weight: bold; }
 .divider { height: 1px; background: var(--panel-border); margin: 4px 0; }
 
-/* Interactive Widgets */
+/* Widgets */
 .bitbox { display: flex; gap: 6px; margin: 8px 0; flex-wrap: wrap; }
 .bit-col { display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .bit-val { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); }
@@ -161,7 +203,7 @@ svg { display: block; width: 100%; height: auto; }
 
 <div class="wrap">
   <header>
-    <div class="eyebrow">Interaktiv Modul · Klicka på komponenterna</div>
+    <div class="eyebrow">Interaktiv Modul · Synchronized Height</div>
     <h1>Datorns Huvudkomponenter</h1>
     <div class="sub-bar">
       <p class="sub">Visualisering av kommunikationsvägar, logik och hårdvara på ett moderkort. Klicka på valfri enhet eller starta flödessimuleringen.</p>
@@ -170,112 +212,85 @@ svg { display: block; width: 100%; height: auto; }
   </header>
 
   <div class="layout">
-    <!-- SVGBORD -->
     <div class="board-card">
-      <div class="board-hint">// INTERAKTIVT MODERKORT</div>
-      <svg viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg">
-        <!-- LEDNINGSBANOR (TRACES) -->
-        
-        <!-- Power: PSU -> CPU -->
-        <path id="t-psu-cpu" class="trace power" d="M 890,40 L 890,15 L 500,15 L 500,130" />
-        
-        <!-- Power: PSU -> PCH -->
-        <path id="t-psu-pch" class="trace power" d="M 910,170 L 910,290 L 510,290 L 510,330" />
-
-        <!-- Power: PSU -> GPU -->
-        <path id="t-psu-gpu" class="trace power" d="M 930,170 L 930,540 L 250,540 L 250,510" />
-        
-        <!-- Data: CPU -> RAM -->
-        <path id="t-cpu-ram" class="trace" d="M 540,130 L 540,75 L 680,75" />
-        
-        <!-- Data: CPU -> PCH -->
-        <path id="t-cpu-pch" class="trace" d="M 470,250 L 470,330" />
-        
-        <!-- Data: CPU -> GPU -->
-        <path id="t-cpu-gpu" class="trace" d="M 420,200 L 320,200 L 320,440 L 400,440" />
-
-        <!-- Data: PCH -> Storage -->
-        <path id="t-pch-storage" class="trace" d="M 560,370 L 720,370" />
-        
-        <!-- Data: PCH -> I/O -->
-        <path id="t-pch-io" class="trace" d="M 460,390 L 250,390 L 250,220 L 120,220" />
+      <div class="board-hint">// INTERAKTIVT MODERKORT (WIDESCREEN 1200x550)</div>
+      <svg viewBox="0 0 1200 550" xmlns="http://www.w3.org/2000/svg">
+        <path id="t-psu-cpu" class="trace power" d="M 1080,40 L 1080,20 L 580,20 L 580,110" />
+        <path id="t-psu-pch" class="trace power" d="M 1100,180 L 1100,300 L 590,300 L 590,340" />
+        <path id="t-psu-gpu" class="trace power" d="M 1120,180 L 1120,490 L 290,490 L 290,460" />
+        <path id="t-cpu-ram" class="trace" d="M 630,110 L 630,75 L 820,75" />
+        <path id="t-cpu-pch" class="trace" d="M 530,240 L 530,340" />
+        <path id="t-cpu-gpu" class="trace" d="M 480,180 L 370,180 L 370,390 L 440,390" />
+        <path id="t-pch-storage" class="trace" d="M 640,390 L 880,390" />
+        <path id="t-pch-io" class="trace" d="M 520,410 L 280,410 L 280,210 L 130,210" />
 
         <circle class="pulse" id="pulse1"/>
 
-        <!-- COMPONENT: CPU -->
-        <g class="chip" data-id="cpu" transform="translate(420,130)">
-          <rect class="hitbox" width="160" height="120"/>
-          <rect class="outline" width="160" height="120" rx="8"/>
-          <rect x="20" y="20" width="120" height="80" rx="4" fill="#334155"/>
-          <text class="chip-label" x="80" y="58" text-anchor="middle">CPU</text>
-          <text class="chip-sub" x="80" y="74" text-anchor="middle">PROCESSOR</text>
+        <g class="chip" data-id="cpu" transform="translate(480,110)">
+          <rect class="hitbox" width="180" height="130"/>
+          <rect class="outline" width="180" height="130" rx="8"/>
+          <rect x="25" y="20" width="130" height="90" rx="4" fill="#334155"/>
+          <text class="chip-label" x="90" y="62" text-anchor="middle">CPU</text>
+          <text class="chip-sub" x="90" y="80" text-anchor="middle">PROCESSOR</text>
         </g>
 
-        <!-- COMPONENT: RAM -->
-        <g class="chip" data-id="ram" transform="translate(680,35)">
-          <rect class="hitbox" width="140" height="90"/>
-          <rect class="outline" width="24" height="90" rx="3"/>
-          <rect class="outline" x="35" width="24" height="90" rx="3"/>
-          <rect class="outline" x="70" width="24" height="90" rx="3"/>
-          <text class="chip-label" x="46" y="115" text-anchor="middle">RAM</text>
-          <text class="chip-sub" x="46" y="130" text-anchor="middle">ARBETSMINNE</text>
+        <g class="chip" data-id="ram" transform="translate(820,30)">
+          <rect class="hitbox" width="180" height="90"/>
+          <rect class="outline" width="28" height="90" rx="3"/>
+          <rect class="outline" x="42" width="28" height="90" rx="3"/>
+          <rect class="outline" x="84" width="28" height="90" rx="3"/>
+          <text class="chip-label" x="57" y="115" text-anchor="middle">RAM</text>
+          <text class="chip-sub" x="57" y="130" text-anchor="middle">ARBETSMINNE</text>
         </g>
 
-        <!-- COMPONENT: CHIPSET (PCH) -->
-        <g class="chip" data-id="pch" transform="translate(460,330)">
-          <rect class="hitbox" width="100" height="80"/>
-          <rect class="outline" width="100" height="80" rx="6"/>
-          <rect x="15" y="15" width="70" height="50" rx="3" fill="#0f172a" stroke="#334155"/>
-          <text class="chip-label" x="50" y="42" text-anchor="middle" style="font-size:11px;">CHIPSET</text>
-          <text class="chip-sub" x="50" y="55" text-anchor="middle">PCH NAV</text>
+        <g class="chip" data-id="pch" transform="translate(520,340)">
+          <rect class="hitbox" width="120" height="90"/>
+          <rect class="outline" width="120" height="90" rx="6"/>
+          <rect x="15" y="15" width="90" height="60" rx="3" fill="#0f172a" stroke="#334155"/>
+          <text class="chip-label" x="60" y="46" text-anchor="middle" style="font-size:12px;">CHIPSET</text>
+          <text class="chip-sub" x="60" y="62" text-anchor="middle">PCH NAV</text>
         </g>
 
-        <!-- COMPONENT: GPU -->
-        <g class="chip" data-id="gpu" transform="translate(100,420)">
-          <rect class="hitbox" width="300" height="90"/>
-          <rect class="outline" width="300" height="90" rx="6"/>
-          <circle cx="70" cy="45" r="25" fill="#0f172a" stroke="#334155" stroke-width="2"/>
-          <circle cx="160" cy="45" r="25" fill="#0f172a" stroke="#334155" stroke-width="2"/>
-          <text class="chip-label" x="240" y="45" text-anchor="middle">GPU</text>
-          <text class="chip-sub" x="240" y="60" text-anchor="middle">GRAFIKKORT</text>
+        <g class="chip" data-id="gpu" transform="translate(100,370)">
+          <rect class="hitbox" width="340" height="95"/>
+          <rect class="outline" width="340" height="95" rx="6"/>
+          <circle cx="80" cy="47" r="28" fill="#0f172a" stroke="#334155" stroke-width="2"/>
+          <circle cx="180" cy="47" r="28" fill="#0f172a" stroke="#334155" stroke-width="2"/>
+          <text class="chip-label" x="275" y="48" text-anchor="middle">GPU</text>
+          <text class="chip-sub" x="275" y="64" text-anchor="middle">GRAFIKKORT</text>
         </g>
 
-        <!-- COMPONENT: STORAGE (SSD) -->
-        <g class="chip" data-id="storage" transform="translate(720,340)">
-          <rect class="hitbox" width="160" height="60"/>
-          <rect class="outline" width="160" height="60" rx="4"/>
-          <rect x="15" y="15" width="40" height="30" fill="#0f172a"/>
-          <text class="chip-label" x="110" y="32" text-anchor="middle">SSD</text>
-          <text class="chip-sub" x="110" y="46" text-anchor="middle">LAGRING</text>
+        <g class="chip" data-id="storage" transform="translate(880,360)">
+          <rect class="hitbox" width="180" height="65"/>
+          <rect class="outline" width="180" height="65" rx="4"/>
+          <rect x="15" y="15" width="45" height="35" fill="#0f172a"/>
+          <text class="chip-label" x="120" y="34" text-anchor="middle">SSD</text>
+          <text class="chip-sub" x="120" y="49" text-anchor="middle">LAGRING</text>
         </g>
 
-        <!-- COMPONENT: PSU -->
-        <g class="chip" data-id="psu" transform="translate(840,40)">
+        <g class="chip" data-id="psu" transform="translate(1020,40)">
+          <rect class="hitbox" width="120" height="140"/>
+          <rect class="outline" width="120" height="140" rx="6"/>
+          <text class="chip-label" x="60" y="65" text-anchor="middle">PSU</text>
+          <text class="chip-sub" x="60" y="82" text-anchor="middle">STRÖM</text>
+        </g>
+
+        <g class="chip" data-id="io" transform="translate(50,110)">
           <rect class="hitbox" width="100" height="130"/>
-          <rect class="outline" width="100" height="130" rx="6"/>
-          <text class="chip-label" x="50" y="60" text-anchor="middle">PSU</text>
-          <text class="chip-sub" x="50" y="75" text-anchor="middle">STRÖM</text>
+          <rect class="outline" width="80" height="130" rx="4"/>
+          <rect x="12" y="15" width="22" height="14" fill="#334155"/>
+          <rect x="12" y="38" width="22" height="14" fill="#334155"/>
+          <rect x="12" y="70" width="34" height="18" fill="#334155"/>
+          <text class="chip-label" x="40" y="112" text-anchor="middle">I/O</text>
         </g>
 
-        <!-- COMPONENT: I/O -->
-        <g class="chip" data-id="io" transform="translate(50,120)">
-          <rect class="hitbox" width="100" height="120"/>
-          <rect class="outline" width="70" height="120" rx="4"/>
-          <rect x="10" y="15" width="20" height="12" fill="#334155"/>
-          <rect x="10" y="35" width="20" height="12" fill="#334155"/>
-          <rect x="10" y="65" width="30" height="15" fill="#334155"/>
-          <text class="chip-label" x="35" y="105" text-anchor="middle">I/O</text>
-        </g>
-
-        <!-- MONTERINGSHÅL -->
-        <circle class="screwhole" cx="40" cy="40" r="8"/>
-        <circle class="screwhole" cx="960" cy="40" r="8"/>
-        <circle class="screwhole" cx="40" cy="560" r="8"/>
-        <circle class="screwhole" cx="960" cy="560" r="8"/>
+        <circle class="screwhole" cx="30" cy="30" r="8"/>
+        <circle class="screwhole" cx="1170" cy="30" r="8"/>
+        <circle class="screwhole" cx="30" cy="520" r="8"/>
+        <circle class="screwhole" cx="1170" cy="520" r="8"/>
       </svg>
     </div>
 
-    <!-- INFORMATIONSPANEL -->
     <div class="panel" id="panel"></div>
   </div>
 </div>
@@ -296,6 +311,7 @@ const DATA = {
     tag: "TRAFIKLEDAREN (CHIPSET)", title: "Chipset / PCH",
     intro: "Platform Controller Hub (PCH) fungerar som en koordinator på moderkortet. Den hanterar kommunikationen mellan CPU:n och långsammare enheter.",
     facts: [
+      "Spänningsmatas via moderkortets 24-pin ATX-kontakt och egna regulatorer (VRM).",
       "Slussar data från SSD till RAM när du startar ett nytt program.",
       "Avlastar CPU:n genom att styra datatrafik till USB-portar, SATA/NVMe-lagring och ljudkort.",
       "Kopplas till CPU:n via en snabb buss (t.ex. DMI - Direct Media Interface)."
@@ -307,7 +323,7 @@ const DATA = {
     intro: "Korttidsminne som lagrar data för de program som aktivt körs. Det har extremt hög läs- och skrivhastighet jämfört med lagringsenheter.",
     facts: [
       "Laddas fullt med programkod från SSD när applikationer startas.",
-      "Flyktigt minne: All data raderas direkt när datorn stängs av.",
+      "Flyktigt minne (Volatile): All data raderas direkt när datorn stängs av.",
       "Möjliggör blixtsnabb datatillgång för CPU:n."
     ],
     traces: ["t-cpu-ram"], extra: "bits"
@@ -336,9 +352,9 @@ const DATA = {
     tag: "STRÖMFÖRSÖRJNING", title: "PSU — Nätaggregat",
     intro: "Omvandlar växelström (AC) från vägguttaget till stabil likström (DC) med rätt spänningsnivåer för datorns komponenter.",
     facts: [
-      "Levererar spänningar på huvudsakligen 12V, 5V och 3.3V.",
+      "Levererar 12V till CPU och GPU, samt 12V/5V/3.3V via moderkortets 24-pin ATX-kontakt till PCH och kretsar.",
       "Effektiviteten mäts ofta med 80 Plus-certifieringar (Gold, Platinum, etc.).",
-      "Matar ström direkt till CPU, GPU, PCH och moderkort."
+      "Spänningsregulatorer (VRM) på moderkortet stegar ner spänningen till exakta nivåer för CPU och PCH."
     ],
     traces: ["t-psu-cpu", "t-psu-gpu", "t-psu-pch"], extra: null
   },
@@ -371,7 +387,7 @@ const PROGRAM_STEPS = [
   { phase: "FAS 2: INDATA & KÖR", label: "6. EXECUTE (GRAFIK)", desc: "CPU skickar instruktioner till GPU för att rita upp den inknappade bokstaven på skärmen.", traces: [{ trace: "t-cpu-gpu", reverse: false }], targetChip: "gpu" },
   { phase: "FAS 3: UTDATA & SPARA", label: "7a. UTDATA: CPU → PCH → I/O", desc: "CPU skickar utdata (t.ex. ljud vid knapptryck eller nätverksdata) via PCH ut till I/O-enheterna.", traces: [{ trace: "t-cpu-pch", reverse: false }, { trace: "t-pch-io", reverse: false }], targetChip: "io" },
   { phase: "FAS 3: UTDATA & SPARA", label: "7b. SPARA: RAM → CPU → PCH", desc: "När du sparar läses filen från RAM, går igenom CPU:n och skickas ner till PCH.", traces: [{ trace: "t-cpu-ram", reverse: true }, { trace: "t-cpu-pch", reverse: false }], targetChip: "pch" },
-  { phase: "FAS 3: UTDATA & SPARA", label: "7c. SPARA: PCH → SSD", desc: "PCH skrivs slutligen ner informationen permanent till SSD-enheten.", traces: [{ trace: "t-pch-storage", reverse: false }], targetChip: "storage" }
+  { phase: "FAS 3: UTDATA & SPARA", label: "7c. SPARA: PCH → SSD", desc: "PCH skriver slutligen ner informationen permanent till SSD-enheten.", traces: [{ trace: "t-pch-storage", reverse: false }], targetChip: "storage" }
 ];
 
 const panel = document.getElementById('panel');
@@ -394,7 +410,6 @@ function selectChip(id) {
       if (el) el.classList.add('active');
     });
 
-    // Skapa pulser för valda ledningsbanor
     const tracesInfo = item.traces.map(tid => ({ 
       trace: tid, 
       reverse: tid === 't-pch-io' || tid === 't-cpu-pch' || tid === 't-pch-storage' 
