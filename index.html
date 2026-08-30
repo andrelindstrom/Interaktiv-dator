@@ -2,636 +2,824 @@
 <html lang="sv">
 <head>
 <meta charset="UTF-8">
-<title>Interaktiv Datorarkitektur</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Magnetkontakt — Komplett Mätning & Balansering (Plint 1–3 & 1–4)</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
 
-:root {
-  --board-bg: #090d16;
-  --board-surface: #0f172a;
-  --board-edge: #020617;
-  --trace-color: rgba(56, 189, 248, 0.2);
-  --trace-active: #38bdf8;
-  --power-trace: rgba(244, 63, 94, 0.3);
-  --power-active: #f43f5e;
-  --gold: #fbbf24;
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --panel-bg: #1e293b;
-  --panel-border: #334155;
-  --font-mono: 'JetBrains Mono', monospace;
-  --font-sans: 'Inter', sans-serif;
+:root{
+  --bg:#0f212e;
+  --bg-panel:#142b3b;
+  --line:#3a5568;
+  --line-dim:#22384a;
+  --text:#e7f0f4;
+  --text-dim:#8fa6b3;
+  --amber:#f2a93b;
+  --amber-glow:#ffcf7a;
+  --orange:#ff9d00;
+  --bright-cyan:#00d2ff;
+  --red:#e4572e;
+  --red-glow:#ff8a63;
+  --mono:'IBM Plex Mono', monospace;
+  --sans:'Inter', sans-serif;
 }
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:
+    radial-gradient(circle at 50% 0%, #1a384d 0%, transparent 60%),
+    var(--bg);
+  color:var(--text);
+  font-family:var(--sans);
+  padding:30px 16px 60px;
+  min-height:100vh;
+}
+.wrap{max-width:860px;margin:0 auto;}
 
-* { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; background: var(--board-bg); color: var(--text-main); font-family: var(--font-sans); }
-body {
-  min-height: 100vh;
-  background: radial-gradient(1200px 600px at 50% 0%, rgba(56, 189, 248, 0.05), transparent 70%), var(--board-bg);
+.eyebrow{
+  font-family:var(--mono); letter-spacing:.14em; font-size:11px;
+  color:var(--text-dim); text-transform:uppercase; margin:0 0 6px;
 }
+h1{
+  font-family:var(--mono); font-size:clamp(20px,4vw,28px); font-weight:600;
+  margin:0 0 4px; letter-spacing:-.01em;
+}
+.sub{color:var(--text-dim); font-size:14px; margin:0 0 24px; line-height:1.5; max-width:65ch;}
 
-.wrap { 
-  width: 100%; 
-  max-width: 100%; 
-  margin: 0 auto; 
-  padding: 24px 32px 40px; 
-}
-
-header {
-  margin-bottom: 24px;
-  border-bottom: 1px solid var(--panel-border);
-  padding-bottom: 16px;
-}
-.eyebrow {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--trace-active);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.eyebrow::before {
-  content: ""; width: 8px; height: 8px; border-radius: 50%;
-  background: var(--trace-active); box-shadow: 0 0 10px var(--trace-active);
-}
-h1 { font-family: var(--font-mono); font-size: clamp(26px, 3vw, 36px); margin: 6px 0; font-weight: 700; }
-.sub-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-.sub { color: var(--text-muted); font-size: 15px; max-width: 800px; margin: 0; }
-
-.layout { 
-  display: grid; 
-  grid-template-columns: minmax(0, 1fr) 380px; 
-  gap: 24px; 
-  align-items: stretch;
-  height: clamp(480px, 60vh, 620px);
+.panel{
+  background:var(--bg-panel); border:1px solid var(--line-dim); border-radius:12px;
+  padding:20px; margin-bottom:16px; box-shadow:0 10px 30px rgba(0,0,0,0.3);
 }
 
-@media (max-width: 1200px) { 
-  .layout { grid-template-columns: minmax(0, 1fr) 320px; } 
+.controls-group{margin-bottom:16px;}
+.controls-group-label{
+  font-family:var(--mono); font-size:11px; color:var(--text-dim); 
+  text-transform:uppercase; letter-spacing:.08em; margin-bottom:6px;
 }
-@media (max-width: 960px) { 
-  .layout { 
-    grid-template-columns: 1fr; 
-    height: auto;
-  } 
+.controls{display:flex; flex-wrap:wrap; gap:10px;}
+.btn{
+  font-family:var(--mono); font-size:12.5px; letter-spacing:.03em; color:var(--text);
+  background:#183448; border:1px solid var(--line); border-radius:8px;
+  padding:10px 16px; cursor:pointer;
+  transition:all .15s ease;
+  display:flex; align-items:center; gap:8px;
 }
+.btn:hover{border-color:#587690; background:#1e3f57;}
+.btn:active{transform:scale(.98);}
+.btn .dot{width:8px;height:8px;border-radius:50%;background:var(--line);transition:background .2s;}
+.btn.on{background:#214661;border-color:var(--amber);}
+.btn.on .dot{background:var(--amber); box-shadow:0 0 8px var(--amber-glow);}
+.btn.on.danger{border-color:var(--red);}
+.btn.on.danger .dot{background:var(--red); box-shadow:0 0 8px var(--red-glow);}
 
-.board-card {
-  background: var(--board-edge);
-  border: 1px solid var(--panel-border);
-  border-radius: 16px;
-  padding: 36px 16px 16px;
-  position: relative;
-  box-shadow: inset 0 0 80px rgba(0,0,0,0.8);
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-}
+svg{width:100%; height:auto; display:block; overflow:visible;}
 
-.board-hint {
-  position: absolute;
-  top: 12px;
-  left: 16px;
-  font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);
-  letter-spacing: 0.08em;
-}
-
-svg { 
-  display: block; 
-  width: 100%; 
-  height: 100%; 
-  max-height: 100%;
-  object-fit: contain;
+.sch-text-orange{
+  font-family:var(--mono);
+  font-size:15px;
+  font-weight:700;
+  fill:var(--orange);
+  text-anchor:middle;
+  letter-spacing:.08em;
+  filter: drop-shadow(0 0 6px rgba(255, 157, 0, 0.75));
 }
 
-.trace { fill: none; stroke: var(--trace-color); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; transition: stroke .3s, filter .3s; }
-.trace.power { stroke: var(--power-trace); stroke-width: 4.5; }
-.trace.active { stroke: var(--trace-active); filter: drop-shadow(0 0 8px var(--trace-active)); }
-.trace.power.active { stroke: var(--power-active); filter: drop-shadow(0 0 10px var(--power-active)); }
-
-.chip { cursor: pointer; }
-.chip .hitbox { fill: transparent; }
-.chip .outline {
-  stroke: var(--panel-border); stroke-width: 1.5; fill: var(--board-surface);
-  transition: stroke .2s, filter .2s;
+.wire{
+  stroke:var(--bright-cyan);
+  stroke-width:2.5;
+  fill:none;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  filter: drop-shadow(0 0 4px rgba(0, 210, 255, 0.5));
 }
-.chip:hover .outline { stroke: var(--trace-active); filter: drop-shadow(0 0 8px rgba(56,189,248,0.4)); }
-.chip.selected .outline { stroke: var(--trace-active); fill: #1e293b; filter: drop-shadow(0 0 12px rgba(56,189,248,0.6)); }
-
-.chip-label { font-family: var(--font-mono); font-size: 14px; font-weight: 700; fill: var(--text-main); pointer-events: none; }
-.chip-sub { font-family: var(--font-mono); font-size: 10px; fill: var(--text-muted); pointer-events: none; }
-.screwhole { fill: #020617; stroke: var(--panel-border); stroke-width: 1.5; }
-
-.pulse { r: 5; fill: var(--trace-active); filter: drop-shadow(0 0 8px var(--trace-active)); opacity: 0; }
-
-.panel {
-  background: var(--panel-bg);
-  border: 1px solid var(--panel-border);
-  border-radius: 16px;
-  padding: 24px;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  gap: 14px;
-  box-sizing: border-box;
-  overflow-y: auto;
+.wire-off{
+  stroke:#2c4354;
+  stroke-width:2.5;
+  fill:none;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.node-dot{
+  fill:var(--bright-cyan);
+  filter: drop-shadow(0 0 5px rgba(0, 210, 255, 0.8));
 }
 
-.panel-tag { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--trace-active); }
-.panel h2 { font-family: var(--font-mono); font-size: 22px; margin: 0; }
-.panel p { font-size: 14px; line-height: 1.6; color: #cbd5e1; margin: 0; }
-.fact-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
-.fact-list li { font-size: 13px; line-height: 1.5; color: var(--text-muted); padding-left: 14px; position: relative; }
-.fact-list li::before { content: "›"; position: absolute; left: 0; color: var(--trace-active); font-weight: bold; }
-.divider { height: 1px; background: var(--panel-border); margin: 4px 0; }
+.sw-terminal-dot{
+  fill:#ffffff;
+  stroke:var(--bright-cyan);
+  stroke-width:2;
+  filter: drop-shadow(0 0 4px rgba(0, 210, 255, 0.6));
+}
 
-.bitbox { display: flex; gap: 6px; margin: 8px 0; flex-wrap: wrap; }
-.bit-col { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-.bit-val { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); }
-.bit {
-  width: 32px; height: 36px; border-radius: 6px; border: 1px solid var(--panel-border);
-  background: var(--board-edge); color: var(--text-muted); font-family: var(--font-mono);
-  font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center;
-  transition: all .15s;
+.sw-line{
+  stroke:var(--bright-cyan);
+  stroke-width:3;
+  stroke-linecap:round;
+  transition:all .3s ease;
+  filter: drop-shadow(0 0 4px rgba(0, 210, 255, 0.6));
 }
-.bit.on { background: rgba(56,189,248,0.2); color: var(--trace-active); border-color: var(--trace-active); box-shadow: 0 0 10px rgba(56,189,248,0.3); }
-.bit-readout { font-family: var(--font-mono); font-size: 20px; color: var(--gold); margin-bottom: 6px; }
-.bit-readout span { font-size: 12px; color: var(--text-muted); }
+.sw-line.open{
+  stroke:#ff6b4a;
+  filter: drop-shadow(0 0 5px rgba(255, 107, 74, 0.8));
+}
 
-.cycle-steps { display: flex; gap: 4px; margin: 6px 0; }
-.cycle-dot { flex: 1; height: 6px; border-radius: 3px; background: var(--panel-border); }
-.cycle-dot.done { background: var(--trace-active); }
-.cycle-btns { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
-.btn {
-  font-family: var(--font-mono); font-size: 12px; background: rgba(255,255,255,0.05); color: var(--text-main);
-  border: 1px solid var(--panel-border); padding: 8px 12px; border-radius: 6px; cursor: pointer; transition: all .15s;
+.signal-path {
+  fill: none;
+  stroke: #7dffb0;
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 8, 8;
+  animation: flow 0.8s linear infinite;
+  filter: drop-shadow(0 0 6px #7dffb0);
 }
-.btn:hover { background: rgba(255,255,255,0.1); }
-.btn.primary { background: rgba(56,189,248,0.2); border-color: var(--trace-active); color: var(--trace-active); }
-.btn.primary:hover { background: rgba(56,189,248,0.3); }
-.btn.auto-run { background: rgba(251,191,36,0.15); border-color: var(--gold); color: var(--gold); }
-.btn.auto-run:hover { background: rgba(251,191,36,0.25); }
-.btn-launch {
-  font-family: var(--font-mono); font-size: 13px; font-weight: 700;
-  background: rgba(56,189,248,0.15); border: 1px solid var(--trace-active); color: var(--trace-active);
-  padding: 10px 16px; border-radius: 8px; cursor: pointer; transition: all .2s;
-  box-shadow: 0 0 12px rgba(56,189,248,0.15);
+
+.signal-broken {
+  fill: none;
+  stroke: #ff6b4a;
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 8, 8;
+  animation: flow 0.8s linear infinite;
+  filter: drop-shadow(0 0 6px #ff6b4a);
 }
-.btn-launch:hover { background: rgba(56,189,248,0.25); box-shadow: 0 0 16px rgba(56,189,248,0.3); }
-.btn:disabled { opacity: 0.3; cursor: default; }
+
+@keyframes flow {
+  100% { stroke-dashoffset: -16; }
+}
+
+.term-num{
+  font-family:var(--mono);
+  font-size:15px;
+  font-weight:700;
+  fill:#1a2b36;
+  text-anchor:middle;
+}
+
+.lead-red-wire{
+  stroke:#d63031;
+  stroke-width:3.5;
+  fill:none;
+  stroke-linecap:round;
+}
+.lead-black-wire{
+  stroke:#111111;
+  stroke-width:3.5;
+  fill:none;
+  stroke-linecap:round;
+}
+
+.resistor-lead{
+  stroke:#718290;
+  stroke-width:2.5;
+  fill:none;
+  stroke-linecap:square;
+  stroke-linejoin:miter;
+}
+
+.meter-casing{fill:#f0a830; stroke:#c48214; stroke-width:2.5;}
+.meter-screen-bg{fill:#12241c; stroke:#08140e; stroke-width:2;}
+.meter-dial-bg{fill:#ded8cb; stroke:#8c8574; stroke-width:1.5;}
+.meter-dial-knob{fill:#5a5446;}
+.meter-port{fill:#1c1c1c; stroke:#000; stroke-width:1.5;}
+
+.lcd-readout{font-family:var(--mono); font-weight:700; fill:#7dffb0; text-anchor:end;}
+.lcd-readout.alarm{fill:#ff6b4a;}
+.lcd-mode{font-family:var(--mono); font-size:10px; fill:#54c489;}
+
+.status-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:20px;}
+@media (max-width:500px){.status-grid{grid-template-columns:1fr;}}
+.status-card{background:#0e2331; border:1px solid var(--line-dim); border-radius:8px; padding:12px 16px;}
+.status-card .k{font-family:var(--mono); font-size:10px; color:var(--text-dim); letter-spacing:.08em; text-transform:uppercase; margin:0 0 6px;}
+.status-card .v{font-family:var(--mono); font-size:14px; font-weight:600; margin:0; display:flex; align-items:center; gap:8px;}
+.v .indi{width:9px;height:9px;border-radius:50%;background:var(--line); flex:none;}
+.v.ok .indi{background:var(--amber); box-shadow:0 0 8px var(--amber-glow);}
+.v.alarm{color:var(--red-glow);}
+.v.alarm .indi{background:var(--red); box-shadow:0 0 8px var(--red-glow); animation:pulse 1s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;} 50%{opacity:.3;}}
+
+.explain{font-size:14px; line-height:1.65; color:#c7d6de;}
+.explain h2{font-family:var(--mono); font-size:13px; font-weight:600; letter-spacing:.05em; text-transform:uppercase; color:var(--text); margin:0 0 10px;}
+.explain ul{margin:0 0 16px; padding-left:20px;}
+.explain li{margin-bottom:8px;}
+.explain p{margin:0 0 12px;}
 </style>
 </head>
 <body>
-
 <div class="wrap">
-  <header>
-    <div class="eyebrow">Interaktiv Modul · Synchronized Height</div>
-    <h1>Datorns Huvudkomponenter</h1>
-    <div class="sub-bar">
-      <p class="sub">Visualisering av kommunikationsvägar, logik och hårdvara på ett moderkort. Klicka på valfri enhet eller starta flödessimuleringen.</p>
-      <button class="btn-launch" onclick="startProgramSequence()">Kör programsekvens ⚙</button>
-    </div>
-  </header>
 
-  <div class="layout">
-    <div class="board-card">
-      <div class="board-hint">// INTERAKTIVT MODERKORT</div>
-      <svg viewBox="0 0 1200 550" xmlns="http://www.w3.org/2000/svg">
-        <path id="t-psu-cpu" class="trace power" d="M 1080,40 L 1080,20 L 580,20 L 580,110" />
-        <path id="t-psu-pch" class="trace power" d="M 1100,180 L 1100,300 L 590,300 L 590,340" />
-        <path id="t-psu-gpu" class="trace power" d="M 1120,180 L 1120,490 L 240,490 L 240,465" />
-        <path id="t-cpu-ram" class="trace" d="M 630,110 L 630,75 L 820,75" />
-        <path id="t-cpu-pch" class="trace" d="M 530,240 L 530,340" />
-        <path id="t-cpu-gpu" class="trace" d="M 480,180 L 320,180 L 320,390 L 390,390" />
-        <path id="t-pch-storage" class="trace" d="M 640,390 L 880,390" />
-        <path id="t-pch-io" class="trace" d="M 520,410 L 460,410 L 460,300 L 90,300 L 90,240" />
+  <p class="eyebrow">Interaktiv Visualisering</p>
+  <h1 id="pageTitle">Mätning av Larmfunktion (Plint 1–2)</h1>
+  <p class="sub" id="pageSub">Se hur multimetern mäter direkt över reed-kontakten för att kontrollera dörrfunktionen.</p>
 
-        <circle class="pulse" id="pulse1"/>
-
-        <g class="chip" data-id="cpu" transform="translate(480,110)">
-          <rect class="hitbox" width="180" height="130"/>
-          <rect class="outline" width="180" height="130" rx="8"/>
-          <rect x="25" y="20" width="130" height="90" rx="4" fill="#334155"/>
-          <text class="chip-label" x="90" y="62" text-anchor="middle">CPU</text>
-          <text class="chip-sub" x="90" y="80" text-anchor="middle">PROCESSOR</text>
-        </g>
-
-        <g class="chip" data-id="ram" transform="translate(820,30)">
-          <rect class="hitbox" width="180" height="90"/>
-          <rect class="outline" width="28" height="90" rx="3"/>
-          <rect class="outline" x="42" width="28" height="90" rx="3"/>
-          <rect class="outline" x="84" width="28" height="90" rx="3"/>
-          <text class="chip-label" x="57" y="115" text-anchor="middle">RAM</text>
-          <text class="chip-sub" x="57" y="130" text-anchor="middle">ARBETSMINNE</text>
-        </g>
-
-        <g class="chip" data-id="pch" transform="translate(520,340)">
-          <rect class="hitbox" width="120" height="90"/>
-          <rect class="outline" width="120" height="90" rx="6"/>
-          <rect x="15" y="15" width="90" height="60" rx="3" fill="#0f172a" stroke="#334155"/>
-          <text class="chip-label" x="60" y="46" text-anchor="middle" style="font-size:12px;">CHIPSET</text>
-          <text class="chip-sub" x="60" y="62" text-anchor="middle">PCH NAV</text>
-        </g>
-
-        <g class="chip" data-id="gpu" transform="translate(50,370)">
-          <rect class="hitbox" width="340" height="95"/>
-          <rect class="outline" width="340" height="95" rx="6"/>
-          <circle cx="80" cy="47" r="28" fill="#0f172a" stroke="#334155" stroke-width="2"/>
-          <circle cx="180" cy="47" r="28" fill="#0f172a" stroke="#334155" stroke-width="2"/>
-          <text class="chip-label" x="275" y="48" text-anchor="middle">GPU</text>
-          <text class="chip-sub" x="275" y="64" text-anchor="middle">GRAFIKKORT</text>
-        </g>
-
-        <g class="chip" data-id="storage" transform="translate(880,360)">
-          <rect class="hitbox" width="180" height="65"/>
-          <rect class="outline" width="180" height="65" rx="4"/>
-          <rect x="15" y="15" width="45" height="35" fill="#0f172a"/>
-          <text class="chip-label" x="120" y="34" text-anchor="middle">SSD</text>
-          <text class="chip-sub" x="120" y="49" text-anchor="middle">LAGRING</text>
-        </g>
-
-        <g class="chip" data-id="psu" transform="translate(1020,40)">
-          <rect class="hitbox" width="120" height="140"/>
-          <rect class="outline" width="120" height="140" rx="6"/>
-          <text class="chip-label" x="60" y="65" text-anchor="middle">PSU</text>
-          <text class="chip-sub" x="60" y="82" text-anchor="middle">STRÖM</text>
-        </g>
-
-        <g class="chip" data-id="io" transform="translate(50,110)">
-          <rect class="hitbox" width="100" height="130"/>
-          <rect class="outline" width="80" height="130" rx="4"/>
-          <rect x="12" y="15" width="22" height="14" fill="#334155"/>
-          <rect x="12" y="38" width="22" height="14" fill="#334155"/>
-          <rect x="12" y="70" width="34" height="18" fill="#334155"/>
-          <text class="chip-label" x="40" y="112" text-anchor="middle">I/O</text>
-        </g>
-
-        <circle class="screwhole" cx="30" cy="30" r="8"/>
-        <circle class="screwhole" cx="1170" cy="30" r="8"/>
-        <circle class="screwhole" cx="30" cy="520" r="8"/>
-        <circle class="screwhole" cx="1170" cy="520" r="8"/>
-      </svg>
+  <div class="panel">
+    <div class="controls-group">
+      <div class="controls-group-label">Mätobjekt / Konfiguration</div>
+      <div class="controls">
+        <button class="btn on" id="meas12Btn">
+          <span class="dot"></span>
+          <span>Mät Plint 1–2 (Larm)</span>
+        </button>
+        <button class="btn" id="meas23Btn">
+          <span class="dot"></span>
+          <span>Mät Plint 2–3 (SAB)</span>
+        </button>
+        <button class="btn" id="meas13Btn">
+          <span class="dot"></span>
+          <span>Mät Plint 1–3 (Obalanserad serie)</span>
+        </button>
+        <button class="btn" id="measBalancedBtn">
+          <span class="dot"></span>
+          <span>Enkel-/Dubbelbalanserad (Plint 1–4)</span>
+        </button>
+      </div>
     </div>
 
-    <div class="panel" id="panel"></div>
+    <!-- Undermeny för Balanserade lägen (visas endast i balanserat läge) -->
+    <div class="controls-group" id="balancedSubControls" style="display:none;">
+      <div class="controls-group-label">Balanseringsläge</div>
+      <div class="controls">
+        <button class="btn on" id="modeSingleBtn">
+          <span class="dot"></span>
+          <span>Enkelbalanserad (1 st 5.6k)</span>
+        </button>
+        <button class="btn" id="modeDoubleBtn">
+          <span class="dot"></span>
+          <span>Dubbelbalanserad (2 st 5.6k)</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="controls-group" id="stateControlsGroup">
+      <div class="controls-group-label">Fysiskt tillstånd</div>
+      <div class="controls" id="stateButtonsContainer">
+        <!-- Fylls via JS -->
+      </div>
+    </div>
+
+    <svg viewBox="0 0 760 420" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="casingGradLight" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#ffffff"/>
+          <stop offset="60%" stop-color="#e6ecef"/>
+          <stop offset="100%" stop-color="#d1dadf"/>
+        </linearGradient>
+
+        <linearGradient id="earGradLight" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#eaeef1"/>
+          <stop offset="100%" stop-color="#c2cbd0"/>
+        </linearGradient>
+
+        <linearGradient id="blockGradLight" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#f8fafb"/>
+          <stop offset="100%" stop-color="#d5dee3"/>
+        </linearGradient>
+
+        <linearGradient id="screwGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#ffffff"/>
+          <stop offset="50%" stop-color="#b0bcc5"/>
+          <stop offset="100%" stop-color="#677784"/>
+        </linearGradient>
+
+        <filter id="boxShadow" x="-10%" y="-10%" width="120%" height="130%">
+          <feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#000" flood-opacity="0.35"/>
+        </filter>
+      </defs>
+
+      <text class="sch-text-orange" x="250" y="30">LARM</text>
+      <text class="sch-text-orange" x="480" y="30">SAB</text>
+
+      <!-- Bakgrundsledningar -->
+      <path class="wire-off" d="M 285,65 L 435,65" />
+      <path class="wire-off" d="M 215,165 L 215,65 L 235,65" />
+      <path class="wire-off" d="M 265,165 L 265,100 L 360,100 L 360,65" />
+      <path class="wire-off" d="M 510,165 L 510,65 L 485,65" />
+
+      <path class="wire" d="M 285,65 L 435,65" />
+      <path class="wire" d="M 215,165 L 215,65 L 235,65" />
+      <path class="wire" d="M 265,165 L 265,100 L 360,100 L 360,65" />
+      <path class="wire" d="M 510,165 L 510,65 L 485,65" />
+
+      <!-- Animerad Signalström -->
+      <path id="signalFlow" class="signal-path" d="" />
+
+      <circle class="node-dot" cx="360" cy="65" r="5" />
+
+      <circle class="sw-terminal-dot" cx="235" cy="65" r="3.5" />
+      <circle class="sw-terminal-dot" cx="285" cy="65" r="3.5" />
+      <circle class="sw-terminal-dot" cx="435" cy="65" r="3.5" />
+      <circle class="sw-terminal-dot" cx="485" cy="65" r="3.5" />
+
+      <line id="larmArm" class="sw-line" x1="235" y1="65" x2="285" y2="65" />
+      <line id="sabArm" class="sw-line" x1="435" y1="65" x2="485" y2="65" />
+
+      <g filter="url(#boxShadow)">
+        <path d="M 95,165 L 150,165 L 150,235 L 95,235 Q 90,235 90,230 L 90,170 Q 90,165 95,165 Z" fill="url(#earGradLight)" stroke="#8fa0ad" stroke-width="1.5"/>
+        <circle cx="120" cy="200" r="8" fill="#202d38" stroke="#718290" stroke-width="1.5"/>
+
+        <path d="M 610,165 L 665,165 Q 670,165 670,170 L 670,230 Q 670,235 665,235 L 610,235 Z" fill="url(#earGradLight)" stroke="#8fa0ad" stroke-width="1.5"/>
+        <circle cx="640" cy="200" r="8" fill="#202d38" stroke="#718290" stroke-width="1.5"/>
+
+        <rect x="145" y="145" width="470" height="110" rx="8" fill="url(#casingGradLight)" stroke="#9bb0c1" stroke-width="2"/>
+        
+        <rect x="165" y="160" width="430" height="80" rx="6" fill="#bcccd6" stroke="#93a5b3" stroke-width="1.5"/>
+
+        <rect x="185" y="168" width="110" height="64" rx="5" fill="url(#blockGradLight)" stroke="#8fa1af" stroke-width="1.5"/>
+        <line x1="240" y1="168" x2="240" y2="232" stroke="#a4b4c2" stroke-width="1.5"/>
+
+        <rect x="480" y="168" width="110" height="64" rx="5" fill="url(#blockGradLight)" stroke="#8fa1af" stroke-width="1.5"/>
+        <line x1="535" y1="168" x2="535" y2="232" stroke="#a4b4c2" stroke-width="1.5"/>
+      </g>
+
+      <text class="term-num" x="215" y="185">1</text>
+      <text class="term-num" x="265" y="185">2</text>
+      <text class="term-num" x="510" y="185">3</text>
+      <text class="term-num" x="560" y="185">4</text>
+
+      <!-- Motstånd 1 (Mellan skruv 1 och 2, används vid dubbelbalanserat) -->
+      <g id="resistor1Group" style="display:none;">
+        <path class="resistor-lead" d="M 215,208 L 215,265 L 230,265 M 250,265 L 265,265 L 265,208" />
+        <g transform="translate(230,259)">
+          <rect x="0" y="0" width="20" height="12" rx="2" fill="#d9b685" stroke="#7a5c37" stroke-width="1.5"/>
+          <rect x="4" y="0" width="2" height="12" fill="#2e7d32"/>
+          <rect x="8" y="0" width="2" height="12" fill="#1565c0"/>
+          <rect x="12" y="0" width="2" height="12" fill="#c62828"/>
+          <rect x="16" y="0" width="2" height="12" fill="#ffd700"/>
+          <text x="10" y="21" font-family="var(--mono)" font-size="9" fill="#8fa6b3" text-anchor="middle" font-weight="700">5.6k</text>
+        </g>
+      </g>
+
+      <!-- Motstånd 2 (Mellan skruv 3 och 4, visas vid balanserade lägen) -->
+      <g id="resistor2Group" style="display:none;">
+        <path class="resistor-lead" d="M 510,208 L 510,265 L 525,265 M 545,265 L 560,265 L 560,208" />
+        <g transform="translate(525,259)">
+          <rect x="0" y="0" width="20" height="12" rx="2" fill="#d9b685" stroke="#7a5c37" stroke-width="1.5"/>
+          <rect x="4" y="0" width="2" height="12" fill="#2e7d32"/>
+          <rect x="8" y="0" width="2" height="12" fill="#1565c0"/>
+          <rect x="12" y="0" width="2" height="12" fill="#c62828"/>
+          <rect x="16" y="0" width="2" height="12" fill="#ffd700"/>
+          <text x="10" y="21" font-family="var(--mono)" font-size="9" fill="#8fa6b3" text-anchor="middle" font-weight="700">5.6k</text>
+        </g>
+      </g>
+
+      <g transform="translate(215,208)">
+        <circle cx="0" cy="0" r="12" fill="url(#screwGrad)" stroke="#455461" stroke-width="1.5"/>
+        <line x1="-6" y1="-6" x2="6" y2="6" stroke="#25323d" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="-6" y1="6" x2="6" y2="-6" stroke="#25323d" stroke-width="2.5" stroke-linecap="round"/>
+      </g>
+
+      <g transform="translate(265,208)">
+        <circle cx="0" cy="0" r="12" fill="url(#screwGrad)" stroke="#455461" stroke-width="1.5"/>
+        <line x1="-6" y1="-6" x2="6" y2="6" stroke="#25323d" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="-6" y1="6" x2="6" y2="-6" stroke="#25323d" stroke-width="2.5" stroke-linecap="round"/>
+      </g>
+
+      <g transform="translate(510,208)">
+        <circle cx="0" cy="0" r="12" fill="url(#screwGrad)" stroke="#455461" stroke-width="1.5"/>
+        <line x1="-6" y1="-6" x2="6" y2="6" stroke="#25323d" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="-6" y1="6" x2="6" y2="-6" stroke="#25323d" stroke-width="2.5" stroke-linecap="round"/>
+      </g>
+
+      <g transform="translate(560,208)">
+        <circle cx="0" cy="0" r="12" fill="url(#screwGrad)" stroke="#455461" stroke-width="1.5"/>
+        <line x1="-6" y1="-6" x2="6" y2="6" stroke="#25323d" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="-6" y1="6" x2="6" y2="-6" stroke="#25323d" stroke-width="2.5" stroke-linecap="round"/>
+      </g>
+
+      <!-- Mätkablar -->
+      <path id="redLead" class="lead-red-wire" d="" />
+      <path id="blackLead" class="lead-black-wire" d="" />
+
+      <g transform="translate(145,310)">
+        <rect class="meter-casing" x="0" y="0" width="150" height="95" rx="12" />
+        
+        <rect class="meter-screen-bg" x="12" y="12" width="126" height="42" rx="4" />
+        <text id="lcdMode" class="lcd-mode" x="20" y="28">))) CONT</text>
+        <text id="lcdText" class="lcd-readout" x="130" y="46" font-size="24">0.0 Ω</text>
+
+        <circle class="meter-dial-bg" cx="75" cy="72" r="11" />
+        <circle class="meter-dial-knob" cx="75" cy="66" r="2.5" />
+
+        <circle class="meter-port" cx="40" cy="78" r="5" />
+        <circle class="meter-port" cx="110" cy="78" r="5" />
+      </g>
+
+    </svg>
+
+    <div class="status-grid" id="statusGridContainer">
+      <!-- Fylls dynamiskt av JS -->
+    </div>
+  </div>
+
+  <div class="panel explain" id="explainBox">
+    <!-- Fylls dynamiskt av JS -->
   </div>
 </div>
 
 <script>
-const DATA = {
-  cpu: {
-    tag: "CENTRAL PROCESSING UNIT", title: "CPU — Processorn",
-    intro: "Processorn är datorns hjärna. Den hämtar instruktioner från minnet, dekoderar dem och utför alla nödvändiga beräkningar.",
-    facts: [
-      "När ett program startas läses det först in från SSD via Chipset till RAM.",
-      "Klockfrekvensen anger antalet beräkningscykler per sekund (ex. 4.0 GHz = 4 miljarder cykler/sek).",
-      "Innehåller supersnabba, interna minnen kallade cache (L1, L2, L3)."
-    ],
-    traces: ["t-psu-cpu", "t-cpu-ram", "t-cpu-gpu", "t-cpu-pch"], extra: null
-  },
-  pch: {
-    tag: "TRAFIKLEDAREN (CHIPSET)", title: "Chipset / PCH",
-    intro: "Platform Controller Hub (PCH) fungerar som en koordinator på moderkortet. Den hanterar kommunikationen mellan CPU:n och långsammare enheter.",
-    facts: [
-      "Slussar data från SSD till RAM när du startar ett nytt program.",
-      "Avlastar CPU:n genom att styra datatrafik till USB-portar, SATA/NVMe-lagring och ljudkort.",
-      "Kopplas till CPU:n via en snabb buss (t.ex. DMI - Direct Media Interface)."
-    ],
-    traces: ["t-psu-pch", "t-cpu-pch", "t-pch-storage", "t-pch-io"], extra: null
-  },
-  ram: {
-    tag: "TEMPORÄRT MINNE", title: "RAM — Arbetsminne",
-    intro: "Korttidsminne som lagrar data för de program som aktivt körs. Det har extremt hög läs- och skrivhastighet jämfört med lagringsenheter.",
-    facts: [
-      "Laddas fullt med programkod från SSD när applikationer startas.",
-      "Flyktigt minne: All data raderas direkt när datorn stängs av.",
-      "Möjliggör blixtsnabb datatillgång för CPU:n."
-    ],
-    traces: ["t-cpu-ram"], extra: "bits"
-  },
-  gpu: {
-    tag: "GRAFIKMOTOR", title: "GPU — Grafikkort",
-    intro: "Specialiserad processor utformad för att hantera tusentals parallella beräkningar samtidigt. Perfekt för 3D-grafik, video och AI.",
-    facts: [
-      "Innehåller tusentals mindre kärnor optimerade för matrisberäkningar.",
-      "Har eget dedikerat minne som kallas VRAM.",
-      "Avlastar CPU:n från tunga visuella och matematiska beräkningar."
-    ],
-    traces: ["t-psu-gpu", "t-cpu-gpu"], extra: null
-  },
-  storage: {
-    tag: "PERMANENT LAGRING", title: "SSD — Solid State Drive",
-    intro: "Datorns långtidsminne där operativsystem, filer och installerade program sparas permanent.",
-    facts: [
-      "Innehåller alla programfiler. Vid start skickas dessa via Chipset hela vägen upp till CPU och RAM.",
-      "Icke-flyktigt minne: Data finns kvar även när strömmen bryts.",
-      "Innehåller inga rörliga delar till skillnad från äldre mekaniska hårddiskar (HDD)."
-    ],
-    traces: ["t-pch-storage", "t-cpu-pch"], extra: null
-  },
-  psu: {
-    tag: "STRÖMFÖRSÖRJNING", title: "PSU — Nätaggregat",
-    intro: "Omvandlar växelström (AC) från vägguttaget till stabil likström (DC) med rätt spänningsnivåer för datorns komponenter.",
-    facts: [
-      "Levererar spänningar på huvudsakligen 12V, 5V och 3.3V",
-      "Effektiviteten mäts ofta med 80 Plus-certifieringar (Gold, Platinum, etc.).",
-      "Matar ström direkt till CPU, GPU, PCH och moderkort."
-    ],
-    traces: ["t-psu-cpu", "t-psu-gpu", "t-psu-pch"], extra: null
-  },
-  io: {
-    tag: "IN- OCH UTGÅNGAR", title: "I/O — In- och utportar",
-    intro: "Gränssnittet som tillåter datorn att kommunicera med omvärlden och tillkopplad kringutrustning.",
-    facts: [
-      "Hanterar in-signaler (mus, tangentbord) och ut-signaler (skärm, ljud).",
-      "Signalerna går från I/O-portarna via PCH (Chipset) vidare upp till CPU:n.",
-      "Inkluderar standarder som USB, HDMI, Ethernet och DisplayPort."
-    ],
-    traces: ["t-pch-io", "t-cpu-pch"], extra: null
-  },
-  program_flow: {
-    tag: "SIMULERING", title: "Program- & Dataflöde",
-    intro: "Steg-för-steg visualisering över hur ett program laddas, tar emot indata från tangentbordet, lagras i RAM och behandlas av hårdvaran.",
-    facts: [],
-    traces: [], extra: "program_flow"
+const meas12Btn = document.getElementById('meas12Btn');
+const meas23Btn = document.getElementById('meas23Btn');
+const meas13Btn = document.getElementById('meas13Btn');
+const measBalancedBtn = document.getElementById('measBalancedBtn');
+
+const balancedSubControls = document.getElementById('balancedSubControls');
+const modeSingleBtn = document.getElementById('modeSingleBtn');
+const modeDoubleBtn = document.getElementById('modeDoubleBtn');
+
+const stateButtonsContainer = document.getElementById('stateButtonsContainer');
+
+const larmArm = document.getElementById('larmArm');
+const sabArm = document.getElementById('sabArm');
+const signalFlow = document.getElementById('signalFlow');
+const redLead = document.getElementById('redLead');
+const blackLead = document.getElementById('blackLead');
+const lcdText = document.getElementById('lcdText');
+const lcdMode = document.getElementById('lcdMode');
+
+const resistor1Group = document.getElementById('resistor1Group');
+const resistor2Group = document.getElementById('resistor2Group');
+
+const pageTitle = document.getElementById('pageTitle');
+const pageSub = document.getElementById('pageSub');
+const explainBox = document.getElementById('explainBox');
+const statusGridContainer = document.getElementById('statusGridContainer');
+
+// Lägesvariabler
+let activeTab = '1-2'; // '1-2', '2-3', '1-3', 'balanced'
+let isDoubleBalanced = false; // false = enkel, true = dubbel
+let doorClosed = true;
+let coverOn = true;
+
+function updateStatus(el, isOk, okMsg, alarmMsg){
+  const textSpan = el.querySelector('span:last-child');
+  el.classList.remove('ok','alarm');
+  if(isOk){
+    el.classList.add('ok');
+    textSpan.textContent = okMsg;
+  } else {
+    el.classList.add('alarm');
+    textSpan.textContent = alarmMsg;
   }
-};
-
-const PROGRAM_STEPS = [
-  { phase: "FAS 1: LADDA PROGRAM", label: "1. SSD → CHIPSET (PCH)", desc: "Du startar ett program. Programfiler läses från SSD:n och skickas till PCH (Chipset).", traces: [{ trace: "t-pch-storage", reverse: true }], targetChip: "pch" },
-  { phase: "FAS 1: LADDA PROGRAM", label: "2. CHIPSET → CPU NAV", desc: "PCH skickar data vidare till moderkortets centrala bussar mot CPU och minneshantering.", traces: [{ trace: "t-cpu-pch", reverse: true }], targetChip: "cpu" },
-  { phase: "FAS 1: LADDA PROGRAM", label: "3. ÖVERFÖRING TILL RAM", desc: "Data skrivs in i RAM-minnet (arbetsminnet) så att det ligger redo för blixtsnabb åtkomst.", traces: [{ trace: "t-cpu-ram", reverse: false }], targetChip: "ram" },
-  { phase: "FAS 2: INDATA & KÖR", label: "4a. INDATA: I/O → CHIPSET", desc: "Du trycker på en tangent. Tangentbordet skickar en signal via I/O-porten till PCH.", traces: [{ trace: "t-pch-io", reverse: true }], targetChip: "pch" },
-  { phase: "FAS 2: INDATA & KÖR", label: "4b. INDATA: CHIPSET → CPU", desc: "PCH skickar en avbrottssignal (interrupt) vidare upp till CPU:n för att tala om att en tangent tryckts ned.", traces: [{ trace: "t-cpu-pch", reverse: true }], targetChip: "cpu" },
-  { phase: "FAS 2: INDATA & KÖR", label: "4c. INDATA: CPU → RAM", desc: "CPU lagrar den mottagna tangentkoden i en indatabuffert i RAM-minnet så att programmet kan läsa den.", traces: [{ trace: "t-cpu-ram", reverse: false }], targetChip: "ram" },
-  { phase: "FAS 2: INDATA & KÖR", label: "5. FETCH (HÄMTA)", desc: "CPU hämtar instruktioner från RAM för att behandla den nyss sparade tangenttryckningen.", traces: [{ trace: "t-cpu-ram", reverse: true }], targetChip: "cpu" },
-  { phase: "FAS 2: INDATA & KÖR", label: "6. EXECUTE (GRAFIK)", desc: "CPU skickar instruktioner till GPU för att rita upp den inknappade bokstaven på skärmen.", traces: [{ trace: "t-cpu-gpu", reverse: false }], targetChip: "gpu" },
-  { phase: "FAS 3: UTDATA & SPARA", label: "7a. UTDATA: CPU → PCH → I/O", desc: "CPU skickar utdata (t.ex. ljud vid knapptryck eller nätverksdata) via PCH ut till I/O-enheterna.", traces: [{ trace: "t-cpu-pch", reverse: false }, { trace: "t-pch-io", reverse: false }], targetChip: "io" },
-  { phase: "FAS 3: UTDATA & SPARA", label: "7b. SPARA: RAM → CPU → PCH", desc: "När du sparar läses filen från RAM, går igenom CPU:n och skickas ner till PCH.", traces: [{ trace: "t-cpu-ram", reverse: true }, { trace: "t-cpu-pch", reverse: false }], targetChip: "pch" },
-  { phase: "FAS 3: UTDATA & SPARA", label: "7c. SPARA: PCH → SSD", desc: "PCH skriver slutligen ner informationen permanent till SSD-enheten.", traces: [{ trace: "t-pch-storage", reverse: false }], targetChip: "storage" }
-];
-
-const panel = document.getElementById('panel');
-let currentStep = 0;
-let isAutoRunning = false;
-let autoTimer = null;
-
-function clearTraces() {
-  document.querySelectorAll('.trace').forEach(t => t.classList.remove('active'));
 }
 
-function selectChip(id) {
-  stopAutoRun();
-  document.querySelectorAll('.chip').forEach(c => c.classList.toggle('selected', c.dataset.id === id));
-  clearTraces();
-  const item = DATA[id];
-  if (item && item.traces) {
-    item.traces.forEach(tid => {
-      const el = document.getElementById(tid);
-      if (el) el.classList.add('active');
-    });
+function render(){
+  // Knappar huvudmeny
+  meas12Btn.classList.toggle('on', activeTab === '1-2');
+  meas23Btn.classList.toggle('on', activeTab === '2-3');
+  meas13Btn.classList.toggle('on', activeTab === '1-3');
+  measBalancedBtn.classList.toggle('on', activeTab === 'balanced');
 
-    const tracesInfo = item.traces.map(tid => ({ 
-      trace: tid, 
-      reverse: tid === 't-pch-io' || tid === 't-cpu-pch' || tid === 't-pch-storage' 
-    }));
-    triggerSequentialPulses(tracesInfo);
+  balancedSubControls.style.display = (activeTab === 'balanced') ? 'block' : 'none';
+
+  // Mekaniska armar
+  if(doorClosed){
+    larmArm.setAttribute('x2','285'); larmArm.setAttribute('y2','65');
+    larmArm.classList.remove('open');
+  } else {
+    larmArm.setAttribute('x2','280'); larmArm.setAttribute('y2','48');
+    larmArm.classList.add('open');
   }
-  renderPanel(id, item);
-}
 
-function startProgramSequence() {
-  selectChip("program_flow");
-}
+  if(coverOn){
+    sabArm.setAttribute('x2','485'); sabArm.setAttribute('y2','65');
+    sabArm.classList.remove('open');
+  } else {
+    sabArm.setAttribute('x2','480'); sabArm.setAttribute('y2','48');
+    sabArm.classList.add('open');
+  }
 
-function renderPanel(id, d) {
-  let widgetHTML = "";
-  if (d.extra === "bits") {
-    widgetHTML = `
-      <div class="divider"></div>
-      <div class="panel-tag">INTERAKTIV BINÄRRÄKNARE</div>
-      <p style="margin-bottom:8px;">Klicka på bitarna nedan för att ändra värde (1 Byte):</p>
-      <div class="bit-readout" id="bitReadout">0 <span>decimalt</span></div>
-      <div class="bitbox" id="bitbox"></div>
+  // Motstånd synlighet
+  resistor1Group.style.display = (activeTab === 'balanced' && isDoubleBalanced) ? 'block' : 'none';
+  resistor2Group.style.display = (activeTab === 'balanced') ? 'block' : 'none';
+
+  // --- LOGIK FÖR OLIKA LÄGEN ---
+  if(activeTab === '1-2'){
+    pageTitle.textContent = "Mätning av Larmfunktion (Plint 1–2)";
+    pageSub.textContent = "Se hur multimetern mäter direkt över reed-kontakten för att kontrollera dörrfunktionen.";
+    lcdMode.textContent = "))) CONT";
+    
+    stateButtonsContainer.innerHTML = `
+      <button class="btn ${doorClosed ? 'on' : ''}" id="stateBtn1">
+        <span class="dot"></span>
+        <span>Dörr: ${doorClosed ? 'STÄNGD' : 'ÖPPEN'}</span>
+      </button>
     `;
-  } else if (d.extra === "program_flow") {
-    currentStep = 0;
-    widgetHTML = `
-      <div class="divider"></div>
-      <div class="panel-tag" id="phaseTag">LADDA & KÖR ETT PROGRAM</div>
-      <div class="cycle-steps" id="cycleDots"></div>
-      <div style="font-family:var(--font-mono); font-size:13px; color:var(--trace-active); margin-top:4px;" id="cycleLabel"></div>
-      <p id="cycleDesc" style="min-height:45px; margin-top:4px;"></p>
-      <div class="cycle-btns">
-        <button class="btn" id="btnPrev">◂ Föregående</button>
-        <button class="btn primary" id="btnNext">Nästa steg ▸</button>
-        <button class="btn auto-run" id="btnAuto">Kör automatiskt ▹</button>
+    document.getElementById('stateBtn1').addEventListener('click', () => { doorClosed = !doorClosed; render(); });
+
+    statusGridContainer.innerHTML = `
+      <div class="status-card">
+        <p class="k">Reed-kontakt (LARM)</p>
+        <p class="v" id="stat1"><span class="indi"></span><span></span></p>
+      </div>
+      <div class="status-card">
+        <p class="k">Mätning Plint 1–2</p>
+        <p class="v" id="stat2"><span class="indi"></span><span></span></p>
       </div>
     `;
-  }
 
-  let factsHTML = "";
-  if (d.facts && d.facts.length > 0) {
-    factsHTML = `
-      <div class="divider"></div>
-      <ul class="fact-list">${d.facts.map(f => `<li>${f}</li>`).join('')}</ul>
+    explainBox.innerHTML = `
+      <h2>Mätning av Larmfunktion (Plint 1–2)</h2>
+      <p>Genom att mäta direkt över <strong>Plint 1 och Plint 2</strong> kontrollerar du reed-kontakten (larmbrytaren). Sabotagekontakten sitter i serie men påverkar inte denna mätning direkt.</p>
+      <ul>
+        <li><strong>Stängd dörr (Magnet nära):</strong> Reed-kontakten sluter kretsen mellan plint 1 och 2. Multimetern visar <strong>0.0 Ω</strong>.</li>
+        <li><strong>Öppen dörr (Magnet borta):</strong> Kontakten öppnas. Multimetern visar <strong>OL</strong> (Open Loop / bruten krets).</li>
+      </ul>
     `;
-  }
 
-  panel.innerHTML = `
-    <div class="panel-tag">${d.tag}</div>
-    <h2>${d.title}</h2>
-    <p>${d.intro}</p>
-    ${factsHTML}
-    ${widgetHTML}
-  `;
+    redLead.setAttribute('d', 'M 215,208 C 180,280 140,320 185,355');
+    blackLead.setAttribute('d', 'M 265,208 C 265,310 270,330 255,355');
 
-  if (d.extra === "bits") initBits();
-  if (d.extra === "program_flow") initProgramFlow();
-}
+    const pStart = "M 185,355 C 140,320 180,280 215,208 L 215,65 L 235,65 ";
+    const pLarmArm = "L 285,65 L 360,65 L 360,100 L 265,100 L 265,208 C 265,310 270,330 255,355";
 
-function initBits() {
-  const box = document.getElementById('bitbox');
-  const readout = document.getElementById('bitReadout');
-  const vals = [128, 64, 32, 16, 8, 4, 2, 1];
-  const state = [0, 0, 0, 0, 0, 0, 0, 0];
-
-  vals.forEach((v, i) => {
-    const col = document.createElement('div');
-    col.className = 'bit-col';
-
-    const valLabel = document.createElement('div');
-    valLabel.className = 'bit-val';
-    valLabel.textContent = v;
-
-    const b = document.createElement('div');
-    b.className = 'bit';
-    b.textContent = '0';
-    b.onclick = () => {
-      state[i] = state[i] ? 0 : 1;
-      b.textContent = state[i];
-      b.classList.toggle('on', state[i] === 1);
-      const sum = state.reduce((acc, curr, idx) => acc + curr * vals[idx], 0);
-      readout.innerHTML = `${sum} <span>decimalt</span>`;
-    };
-
-    col.appendChild(valLabel);
-    col.appendChild(b);
-    box.appendChild(col);
-  });
-}
-
-function initProgramFlow() {
-  const dots = document.getElementById('cycleDots');
-  dots.innerHTML = PROGRAM_STEPS.map(() => `<div class="cycle-dot"></div>`).join('');
-  const prev = document.getElementById('btnPrev');
-  const next = document.getElementById('btnNext');
-  const auto = document.getElementById('btnAuto');
-
-  function update() {
-    dots.querySelectorAll('.cycle-dot').forEach((d, i) => d.classList.toggle('done', i <= currentStep));
-    const step = PROGRAM_STEPS[currentStep];
-    
-    document.getElementById('phaseTag').textContent = step.phase;
-    document.getElementById('cycleLabel').textContent = step.label;
-    document.getElementById('cycleDesc').textContent = step.desc;
-    
-    prev.disabled = currentStep === 0 || isAutoRunning;
-    next.disabled = isAutoRunning;
-    next.textContent = currentStep === PROGRAM_STEPS.length - 1 ? "Börja om ↺" : "Nästa steg ▸";
-    
-    document.querySelectorAll('.chip').forEach(c => c.classList.toggle('selected', c.dataset.id === step.targetChip));
-    clearTraces();
-    
-    step.traces.forEach(t => {
-      const el = document.getElementById(t.trace);
-      if (el) el.classList.add('active');
-    });
-    
-    const stepDuration = Math.max(step.traces.length * 600, 1000);
-    triggerSequentialPulses(step.traces);
-    return stepDuration;
-  }
-
-  function nextAutoStep() {
-    if (!isAutoRunning) return;
-
-    if (currentStep < PROGRAM_STEPS.length - 1) {
-      currentStep++;
-      const duration = update();
-      autoTimer = setTimeout(nextAutoStep, duration + 300);
+    if (doorClosed) {
+      signalFlow.setAttribute('d', pStart + pLarmArm);
+      signalFlow.className.baseVal = "signal-path";
+      lcdText.textContent = '0.0 Ω';
+      lcdText.classList.remove('alarm');
     } else {
-      stopAutoRun();
+      signalFlow.setAttribute('d', pStart);
+      signalFlow.className.baseVal = "signal-broken";
+      lcdText.textContent = 'OL';
+      lcdText.classList.add('alarm');
     }
-  }
 
-  prev.onclick = () => {
-    stopAutoRun();
-    if (currentStep > 0) { currentStep--; update(); }
-  };
-  
-  next.onclick = () => {
-    stopAutoRun();
-    currentStep = (currentStep === PROGRAM_STEPS.length - 1) ? 0 : currentStep + 1;
-    update();
-  };
+    updateStatus(document.getElementById('stat1'), doorClosed, 'Sluten (Magnet nära)', 'Öppen (Larm utlöst)');
+    updateStatus(document.getElementById('stat2'), doorClosed, 'Sluten krets (0.0 Ω)', 'Bruten krets (OL)');
 
-  auto.onclick = () => {
-    if (isAutoRunning) {
-      stopAutoRun();
+  } else if(activeTab === '2-3'){
+    pageTitle.textContent = "Mätning av Sabotagefunktion (Plint 2–3)";
+    pageSub.textContent = "Se hur multimetern mäter över sabotagekontakten (SAB) för att upptäcka om enhetens lock bryts upp.";
+    lcdMode.textContent = "))) CONT";
+
+    stateButtonsContainer.innerHTML = `
+      <button class="btn ${coverOn ? '' : 'on danger'}" id="stateBtn2">
+        <span class="dot"></span>
+        <span>Lock: ${coverOn ? 'MONTERAT' : 'BORTTAGET'}</span>
+      </button>
+    `;
+    document.getElementById('stateBtn2').addEventListener('click', () => { coverOn = !coverOn; render(); });
+
+    statusGridContainer.innerHTML = `
+      <div class="status-card">
+        <p class="k">Sabotagekontakt (SAB)</p>
+        <p class="v" id="stat1"><span class="indi"></span><span></span></p>
+      </div>
+      <div class="status-card">
+        <p class="k">Mätning Plint 2–3</p>
+        <p class="v" id="stat2"><span class="indi"></span><span></span></p>
+      </div>
+    `;
+
+    explainBox.innerHTML = `
+      <h2>Mätning av Sabotagefunktion (Plint 2–3)</h2>
+      <p>Genom att mäta över <strong>Plint 2 och Plint 3</strong> kontrollerar du SAB-kontakten (sabotagebrytaren). Denna brytare är normalt sluten när kapslingen sitter på plats.</p>
+      <ul>
+        <li><strong>Lock på plats (Sabotage slutet):</strong> Brytaren är nedtryckt och sluter kretsen mellan plint 2 och 3. Multimetern visar <strong>0.0 Ω</strong>.</li>
+        <li><strong>Lock borttaget (Sabotage utlöst):</strong> Fjädern fjädrar ut och bryter kontakten. Multimetern visar <strong>OL</strong> (Open Loop / bruten krets).</li>
+      </ul>
+    `;
+
+    redLead.setAttribute('d', 'M 265,208 C 265,310 200,320 185,355');
+    blackLead.setAttribute('d', 'M 510,208 C 510,310 320,330 255,355');
+
+    const pStart23 = "M 185,355 C 200,320 265,310 265,208 L 265,100 L 360,100 L 360,65 L 435,65 ";
+    const pSabArm = "L 485,65 L 510,65 L 510,208 C 510,310 320,330 255,355";
+
+    if (coverOn) {
+      signalFlow.setAttribute('d', pStart23 + pSabArm);
+      signalFlow.className.baseVal = "signal-path";
+      lcdText.textContent = '0.0 Ω';
+      lcdText.classList.remove('alarm');
     } else {
-      isAutoRunning = true;
-      auto.textContent = "Pausa ❚❚";
-      if (currentStep === PROGRAM_STEPS.length - 1) currentStep = 0;
-      const duration = update();
-      autoTimer = setTimeout(nextAutoStep, duration + 300);
+      signalFlow.setAttribute('d', pStart23);
+      signalFlow.className.baseVal = "signal-broken";
+      lcdText.textContent = 'OL';
+      lcdText.classList.add('alarm');
     }
-  };
 
-  update();
-}
+    updateStatus(document.getElementById('stat1'), coverOn, 'Sluten (Lock på plats)', 'Öppen (Sabotage utlöst)');
+    updateStatus(document.getElementById('stat2'), coverOn, 'Sluten krets (0.0 Ω)', 'Bruten krets (OL)');
 
-function stopAutoRun() {
-  isAutoRunning = false;
-  if (autoTimer) clearTimeout(autoTimer);
-  const autoBtn = document.getElementById('btnAuto');
-  if (autoBtn) autoBtn.textContent = "Kör automatiskt ▹";
-  const prevBtn = document.getElementById('btnPrev');
-  const nextBtn = document.getElementById('btnNext');
-  if (prevBtn) prevBtn.disabled = currentStep === 0;
-  if (nextBtn) nextBtn.disabled = false;
-}
+  } else if(activeTab === '1-3'){
+    pageTitle.textContent = "Total Mätning av Obalanserad Slinga (Plint 1–3)";
+    pageSub.textContent = "Mät över hela den seriekopplade slingan (larm och sabotage i serie) för att se om enheten är helt intakt.";
+    lcdMode.textContent = "))) CONT";
 
-function triggerSequentialPulses(tracesInfo) {
-  const pulse = document.getElementById('pulse1');
-  if (!pulse || !tracesInfo || tracesInfo.length === 0) return;
+    stateButtonsContainer.innerHTML = `
+      <button class="btn ${doorClosed ? 'on' : ''}" id="doorBtn">
+        <span class="dot"></span>
+        <span>Dörr: ${doorClosed ? 'STÄNGD' : 'ÖPPEN'}</span>
+      </button>
+      <button class="btn ${!coverOn ? 'on danger' : ''}" id="sabBtn">
+        <span class="dot"></span>
+        <span>Lock: ${coverOn ? 'MONTERAT' : 'BORTTAGET'}</span>
+      </button>
+    `;
+    document.getElementById('doorBtn').addEventListener('click', () => { doorClosed = !doorClosed; render(); });
+    document.getElementById('sabBtn').addEventListener('click', () => { coverOn = !coverOn; render(); });
 
-  let traceIndex = 0;
+    statusGridContainer.innerHTML = `
+      <div class="status-card">
+        <p class="k">Reed-kontakt (LARM)</p>
+        <p class="v" id="larmStat"><span class="indi"></span><span></span></p>
+      </div>
+      <div class="status-card">
+        <p class="k">Sabotagebrytare (SAB)</p>
+        <p class="v" id="sabStat"><span class="indi"></span><span></span></p>
+      </div>
+      <div class="status-card">
+        <p class="k">Mätning Plint 1–3</p>
+        <p class="v" id="loopStat"><span class="indi"></span><span></span></p>
+      </div>
+      <div class="status-card">
+        <p class="k">Larmutgång</p>
+        <p class="v" id="alarmStat"><span class="indi"></span><span></span></p>
+      </div>
+    `;
 
-  function runNextTrace() {
-    if (traceIndex >= tracesInfo.length) return;
-    
-    const { trace: traceId, reverse } = tracesInfo[traceIndex];
-    const path = document.getElementById(traceId);
-    if (!path) return;
+    explainBox.innerHTML = `
+      <h2>Total Mätning över Plint 1–3 (Obalanserad typ)</h2>
+      <p><strong>Obalanserad krets:</strong> Larmkontakt och sabotagekontakt ligger i serie mellan plint 1 och plint 3 (med plint 2 som mittpunkt). Om antingen dörren öppnas eller locket tas bort bryts hela slingan.</p>
+      <ul>
+        <li><strong>Plint 1 till Plint 3:</strong> Multimetern kontrollerar hela den sammanlänkade slingan.</li>
+        <li>Båda brytarna måste vara slutna för att multimetern ska visa <strong>0.0 Ω</strong>. Om någon del bryts visas <strong>OL</strong>.</li>
+      </ul>
+    `;
 
-    const length = path.getTotalLength();
-    let start = null;
-    const duration = 600;
+    redLead.setAttribute('d', 'M 215,208 C 180,280 140,320 185,355');
+    blackLead.setAttribute('d', 'M 510,208 C 510,320 320,330 255,355');
 
-    function animate(timestamp) {
-      if (!start) start = timestamp;
-      const elapsed = timestamp - start;
-      const progress = Math.min(elapsed / duration, 1);
-      const distance = reverse ? length * (1 - progress) : length * progress;
-      const point = path.getPointAtLength(distance);
+    const isClosed = doorClosed && coverOn;
+    const pStart = "M 185,355 C 140,320 180,280 215,208 L 215,65 L 235,65 ";
+    const pLarmArm = "L 285,65 ";
+    const pMiddle = "L 435,65 ";
+    const pSabArm = "L 485,65 ";
+    const pEnd = "L 510,65 L 510,208 C 510,320 320,330 255,355";
 
-      pulse.setAttribute('cx', point.x);
-      pulse.setAttribute('cy', point.y);
-      pulse.style.opacity = '1';
+    if (doorClosed && coverOn) {
+      signalFlow.setAttribute('d', pStart + pLarmArm + pMiddle + pSabArm + pEnd);
+      signalFlow.className.baseVal = "signal-path";
+      lcdText.textContent = '0.0 Ω';
+      lcdText.classList.remove('alarm');
+    } else if (!doorClosed) {
+      signalFlow.setAttribute('d', pStart);
+      signalFlow.className.baseVal = "signal-broken";
+      lcdText.textContent = 'OL';
+      lcdText.classList.add('alarm');
+    } else if (!coverOn) {
+      signalFlow.setAttribute('d', pStart + pLarmArm + pMiddle);
+      signalFlow.className.baseVal = "signal-broken";
+      lcdText.textContent = 'OL';
+      lcdText.classList.add('alarm');
+    }
 
-      if (progress < 1) {
-        requestAnimationFrame(animate);
+    updateStatus(document.getElementById('larmStat'), doorClosed, 'Sluten (Magnet nära)', 'Öppen (Larm)');
+    updateStatus(document.getElementById('sabStat'), coverOn, 'Sluten (Lock på)', 'Öppen (Sabotage)');
+    updateStatus(document.getElementById('loopStat'), isClosed, 'Sluten krets (0.0 Ω)', 'Bruten krets (OL)');
+    updateStatus(document.getElementById('alarmStat'), isClosed, 'Normal (Inget larm)', 'UTLÖST LARM');
+
+  } else if(activeTab === 'balanced'){
+    lcdMode.textContent = "kΩ RES";
+    modeSingleBtn.classList.toggle('on', !isDoubleBalanced);
+    modeDoubleBtn.classList.toggle('on', isDoubleBalanced);
+
+    stateButtonsContainer.innerHTML = `
+      <button class="btn ${doorClosed ? 'on' : ''}" id="doorBtnBal">
+        <span class="dot"></span>
+        <span>Dörr: ${doorClosed ? 'STÄNGD' : 'ÖPPEN'}</span>
+      </button>
+      <button class="btn ${!coverOn ? 'on danger' : ''}" id="sabBtnBal">
+        <span class="dot"></span>
+        <span>Lock: ${coverOn ? 'MONTERAT' : 'BORTTAGET'}</span>
+      </button>
+    `;
+    document.getElementById('doorBtnBal').addEventListener('click', () => { doorClosed = !doorClosed; render(); });
+    document.getElementById('sabBtnBal').addEventListener('click', () => { coverOn = !coverOn; render(); });
+
+    statusGridContainer.innerHTML = `
+      <div class="status-card">
+        <p class="k">Reed-kontakt (LARM)</p>
+        <p class="v" id="larmStat"><span class="indi"></span><span></span></p>
+      </div>
+      <div class="status-card">
+        <p class="k">Sabotagebrytare (SAB)</p>
+        <p class="v" id="sabStat"><span class="indi"></span><span></span></p>
+      </div>
+      <div class="status-card">
+        <p class="k">Mätning Plint 1–4</p>
+        <p class="v" id="loopStat"><span class="indi"></span><span></span></p>
+      </div>
+      <div class="status-card">
+        <p class="k">Larmutgång</p>
+        <p class="v" id="alarmStat"><span class="indi"></span><span></span></p>
+      </div>
+    `;
+
+    redLead.setAttribute('d', 'M 215,208 C 180,280 140,320 185,355');
+    blackLead.setAttribute('d', 'M 560,208 C 560,330 360,340 255,355');
+
+    const pStart = "M 185,355 C 140,320 180,280 215,208 ";
+    const pEnd = "C 560,330 360,340 255,355";
+
+    if (!isDoubleBalanced) {
+      // --- ENKELBALANSERAD ---
+      pageTitle.textContent = "Magnetkontakt — Enkelbalanserad Slinga";
+      pageSub.textContent = "Simulera mätning med multimeter på en enkelbalanserad slinga med ett 5,6 kΩ slutmotstånd mellan skruv 3 och 4.";
+      
+      explainBox.innerHTML = `
+        <h2>Hur enkelbalansering fungerar</h2>
+        <p><strong>Enkelbalanserad krets (EOL):</strong> Kretsen övervakas via ett motstånd i serie i slutet av slingan. Centralen eller multimetern förväntar sig ett fast värde (5,6 kΩ) i viloläge.</p>
+        <ul>
+          <li><strong>Dörren stängd & lock på:</strong> Hela slingan är sluten genom motståndet undertill. Multimetern visar <strong>5,6 kΩ</strong>.</li>
+          <li><strong>Dörr öppen eller sabotage:</strong> Slingan bryts helt, vilket ger avbrott och multimetern visar <strong>OL</strong> (Open Loop).</li>
+        </ul>
+      `;
+
+      const pResistor = "L 215,65 L 235,65 L 285,65 L 435,65 L 485,65 L 510,65 L 510,208 L 510,265 L 560,265 L 560,208 ";
+
+      if (doorClosed && coverOn) {
+        signalFlow.setAttribute('d', pStart + pResistor + pEnd);
+        signalFlow.className.baseVal = "signal-path";
+        lcdText.textContent = '5.6 kΩ';
+        lcdText.classList.remove('alarm');
+      } else if (!doorClosed) {
+        signalFlow.setAttribute('d', pStart + "L 215,65 L 235,65");
+        signalFlow.className.baseVal = "signal-broken";
+        lcdText.textContent = 'OL';
+        lcdText.classList.add('alarm');
       } else {
-        traceIndex++;
-        if (traceIndex < tracesInfo.length) {
-          runNextTrace();
-        } else {
-          pulse.style.opacity = '0';
-        }
+        signalFlow.setAttribute('d', pStart + "L 215,65 L 235,65 L 285,65 L 435,65");
+        signalFlow.className.baseVal = "signal-broken";
+        lcdText.textContent = 'OL';
+        lcdText.classList.add('alarm');
       }
-    }
-    requestAnimationFrame(animate);
-  }
 
-  runNextTrace();
+      const isClosed = doorClosed && coverOn;
+      updateStatus(document.getElementById('larmStat'), doorClosed, 'Sluten (Magnet nära)', 'Öppen (Larm)');
+      updateStatus(document.getElementById('sabStat'), coverOn, 'Sluten (Lock på)', 'Öppen (Sabotage)');
+      updateStatus(document.getElementById('loopStat'), isClosed, 'Balanserad (5.6 kΩ)', 'Bruten krets (OL)');
+      updateStatus(document.getElementById('alarmStat'), isClosed, 'Normal (Inget larm)', 'UTLÖST LARM');
+
+    } else {
+      // --- DUBBELBALANSERAD ---
+      pageTitle.textContent = "Magnetkontakt — Dubbelbalanserad Slinga";
+      pageSub.textContent = "När dörren är stängd går strömmen via plint 1, larmkontakten och vidare till sabotageslingan. Vid larm tvingas strömmen via motståndet.";
+
+      explainBox.innerHTML = `
+        <h2>Hur dubbelbalansering fungerar</h2>
+        <p><strong>Dubbelbalanserad krets:</strong> Använder två motstånd (ett parallellt över larmkontakten och ett i serie vid sabotaget) för att särskilja dörrlarm från sabotage.</p>
+        <ul>
+          <li><strong>Dörren stängd (Normalt läge):</strong> Strömmen passerar direkt förbi larmkontakten. Multimetern visar seriemotståndet på <strong>5.6 kΩ</strong>.</li>
+          <li><strong>Dörren öppen (Larm):</strong> Larmkontakten bryts och tvingar strömmen genom det parallellkopplade motståndet, vilket höjer totala motståndet till <strong>11.2 kΩ</strong>.</li>
+          <li><strong>Borttaget lock (Sabotage):</strong> Sabotagebrytaren bryter kretsen helt och ger avbrott (<strong>OL</strong>).</li>
+        </ul>
+      `;
+
+      const isClosed = doorClosed && coverOn;
+
+      if (doorClosed && coverOn) {
+        const pPath = "L 215,65 L 235,65 L 285,65 L 435,65 L 485,65 L 510,65 L 510,208 L 510,265 L 525,265 M 545,265 L 560,265 L 560,208 ";
+        signalFlow.setAttribute('d', pStart + pPath + pEnd);
+        signalFlow.className.baseVal = "signal-path";
+        lcdText.textContent = '5.6 kΩ';
+        lcdText.classList.remove('alarm');
+      } else if (!doorClosed && coverOn) {
+        const pPath = "L 215,208 L 215,265 L 230,265 M 250,265 L 265,265 L 265,208 L 265,100 L 360,100 L 360,65 L 435,65 L 485,65 L 510,65 L 510,208 L 510,265 L 525,265 M 545,265 L 560,265 L 560,208 ";
+        signalFlow.setAttribute('d', pStart + pPath + pEnd);
+        signalFlow.className.baseVal = "signal-broken";
+        lcdText.textContent = '11.2 kΩ';
+        lcdText.classList.add('alarm');
+      } else {
+        // Strömmen går från skruv 1, genom larmplinten (eller förbi motståndet om dörren är öppen) och "fastnar" vid den öppna sabkontakten uppe
+        const pPath = (!doorClosed) 
+          ? "L 215,208 L 215,265 L 230,265 M 250,265 L 265,265 L 265,208 L 265,100 L 360,100 L 360,65 L 435,65"
+          : "L 215,65 L 235,65 L 285,65 L 435,65";
+        signalFlow.setAttribute('d', pStart + pPath);
+        signalFlow.className.baseVal = "signal-broken";
+        lcdText.textContent = 'OL';
+        lcdText.classList.add('alarm');
+      }
+
+      updateStatus(document.getElementById('larmStat'), doorClosed, 'Sluten (Magnet nära)', 'Öppen (Dörr larm)');
+      updateStatus(document.getElementById('sabStat'), coverOn, 'Sluten (Lock på)', 'Öppen (Sabotage)');
+      updateStatus(document.getElementById('loopStat'), isClosed, 'Normal (5.6 kΩ)', doorClosed ? 'Sabotage / Avbrott' : 'Dörr larm (11.2 kΩ)');
+      updateStatus(document.getElementById('alarmStat'), isClosed, 'Normal (Inget larm)', 'UTLÖST LARM');
+    }
+  }
 }
 
-document.querySelectorAll('.chip').forEach(chip => {
-  chip.addEventListener('click', () => selectChip(chip.dataset.id));
-});
+// Händelselyssnare för huvudvalen
+meas12Btn.addEventListener('click', () => { activeTab = '1-2'; render(); });
+meas23Btn.addEventListener('click', () => { activeTab = '2-3'; render(); });
+meas13Btn.addEventListener('click', () => { activeTab = '1-3'; render(); });
+measBalancedBtn.addEventListener('click', () => { activeTab = 'balanced'; render(); });
 
-// Startvy
-panel.innerHTML = `
-  <div class="panel-tag">SYSTEMSTATUS: REDO</div>
-  <h2>Välj en komponent</h2>
-  <p>Klicka på någon av komponenterna på kretskortet till vänster (CPU, RAM, CHIPSET/PCH, GPU, SSD, PSU eller I/O) för att visualisera hur data rör sig i datorn.</p>
-  <p style="margin-top:12px; color:var(--text-muted);">Eller klicka på knappen <strong>"Kör programsekvens ⚙"</strong> i sidhuvudet för att starta en komplett flödesdemonstration.</p>
-`;
+// Händelselyssnare för balanserade undermenyn
+modeSingleBtn.addEventListener('click', () => { isDoubleBalanced = false; render(); });
+modeDoubleBtn.addEventListener('click', () => { isDoubleBalanced = true; render(); });
+
+render();
 </script>
 </body>
 </html>
